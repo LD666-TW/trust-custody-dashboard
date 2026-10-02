@@ -41,7 +41,6 @@
     state.B = Object.fromEntries(d.banks.map((b) => [b.bank, b]));
     document.title = `基金保管市場看板｜資料年月 ${m.month_label}`;
     $('#top-month').textContent = `資料年月 ${m.month_label}`;
-    $('#hero-bank').textContent = HL;
 
     const od = (m.sources || []).filter((s) => s.last_modified_tw).map((s) => s.last_modified_tw).sort();
     $('#meta-row').innerHTML = [
