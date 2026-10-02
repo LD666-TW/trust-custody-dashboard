@@ -30,6 +30,8 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      updated: ${{ steps.build.outputs.updated }}
     steps:
       - name: 取出程式與現有資料
         uses: actions/checkout@v4
@@ -72,3 +74,28 @@ jobs:
           git commit -m "資料更新：${MONTH}（自動）"
           git pull --rebase --autostash
           git push
+
+  deploy:
+    needs: update
+    if: needs.update.outputs.updated == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+      - id: deployment
+        uses: actions/deploy-pages@v4
