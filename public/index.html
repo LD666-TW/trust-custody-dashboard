@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>基金保管市場看板｜每月更新</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23df3131'/%3E%3Cstop offset='1' stop-color='%23fd763f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Crect x='14' y='34' width='8' height='16' rx='3' fill='white'/%3E%3Crect x='28' y='24' width='8' height='26' rx='3' fill='white'/%3E%3Crect x='42' y='14' width='8' height='36' rx='3' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <div>
+          <strong>基金保管市場看板</strong>
+          <span class="brand-sub">AI Agent 驅動信託客群洞察與商品企劃・Demo 1</span>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <span class="chip chip-warm">每月更新，非即時</span>
+        <span class="chip" id="top-month">資料年月 —</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <span class="eyebrow">Demo 1｜公會公開資料</span>
+      <h1>基金保管市場：<span class="gradient-text" id="hero-bank">永豐</span>站在哪裡</h1>
+      <p class="lead">簡報 Demo 1 的分析，做成每月自動更新的看板：公會每月公布資料後自動重算，現場可以自己篩選、自己查。</p>
+      <div class="meta-row" id="meta-row"></div>
+      <p class="notice" id="pin-notice" hidden></p>
+    </section>
+
+    <section class="wrap" aria-labelledby="kpi-title">
+      <h2 class="sr-only" id="kpi-title">三種算法的市占與排名</h2>
+      <div class="stat-grid" id="kpis"></div>
+      <p class="caption" id="kpi-caption"></p>
+    </section>
+
+    <section class="block wrap" aria-labelledby="rank-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">一｜存量市占</span>
+          <h2 id="rank-title">保管行排名：換一種算法，名次就不同</h2>
+        </div>
+        <div class="seg" role="tablist" aria-label="排名算法" id="rank-seg">
+          <button role="tab" data-k="n" aria-selected="true">依檔數</button>
+          <button role="tab" data-k="aum" aria-selected="false">依規模</button>
+          <button role="tab" data-k="fee" aria-selected="false">依保管費</button>
+        </div>
+      </div>
+      <div class="grid-rank">
+        <div class="card">
+          <div class="card-label" id="rank-label"></div>
+          <ol class="bars" id="bars"></ol>
+          <button class="link-btn" id="bars-toggle" type="button"></button>
+        </div>
+        <div class="card">
+          <div class="card-label">三種算法對照｜點選要比較的保管行（最多 3 家）</div>
+          <div class="chips" id="cmp-chips"></div>
+          <div class="table-scroll">
+            <table class="tbl tbl-cmp" id="cmp-table"></table>
+          </div>
+          <p class="small">括號內為名次；並列者名次相同。規模＝月底基金規模（新台幣）；保管費＝當月保管費收入。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block wrap" aria-labelledby="new-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">二｜新案：誰拿到新基金</span>
+          <h2 id="new-title">新基金被誰拿走</h2>
+        </div>
+      </div>
+      <div class="grid-new">
+        <div class="card">
+          <div class="card-label" id="yr-label"></div>
+          <div class="yearbars" id="yearbars"></div>
+          <p class="small" id="yr-note"></p>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-label" id="top-label"></div>
+            <div class="seg seg-sm" role="tablist" aria-label="年度" id="year-seg"></div>
+          </div>
+          <div class="table-scroll">
+            <table class="tbl" id="top-table"></table>
+          </div>
+          <p class="body-note" id="top-note"></p>
+        </div>
+      </div>
+      <div class="card card-wide">
+        <div class="card-label" id="type-label"></div>
+        <div class="table-scroll">
+          <table class="tbl tbl-types" id="type-table"></table>
+        </div>
+        <p class="small">產品類型依公會類型代號歸併：主動式 ETF＝AL*；被動股票 ETF＝AH11、AH21；債券 ETF＝AH22；多重資產／平衡／組合＝AJ*、AE*、AH26；指數基金／ETF 連結＝AI*、AK*；其餘歸「其他」。</p>
+      </div>
+    </section>
+
+    <section class="block wrap" aria-labelledby="list-title">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">三｜自己查</span>
+          <h2 id="list-title">投信 × 保管行明細</h2>
+        </div>
+      </div>
+      <div class="card">
+        <div class="filters">
+          <label>投信<select id="f-co"></select></label>
+          <label>保管行<select id="f-bank"></select></label>
+          <label>產品類型<select id="f-group"></select></label>
+          <label>成立日（起）<input type="date" id="f-from"></label>
+          <label>成立日（迄）<input type="date" id="f-to"></label>
+          <label class="search">基金名稱關鍵字<input type="search" id="f-q" placeholder="例如：主動式、ETF、復華"></label>
+        </div>
+        <div class="presets">
+          <span class="presets-label">一鍵範例</span>
+          <div class="chips" id="presets"></div>
+        </div>
+        <div class="list-summary">
+          <p id="list-count" aria-live="polite"></p>
+          <button class="btn" id="csv-btn" type="button">下載 CSV</button>
+        </div>
+        <p class="small" id="list-breakdown"></p>
+        <div class="table-scroll table-tall">
+          <table class="tbl tbl-funds" id="fund-table"></table>
+        </div>
+        <p class="small">CSV 用 Excel 開啟時，請把「基金統編」欄設成「文字」，否則開頭的 0 會不見（Demo 1 第 11 頁的坑 03）。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <span class="eyebrow eyebrow-dark">資料來源</span>
+          <ul class="foot-list" id="sources"></ul>
+        </div>
+        <div>
+          <span class="eyebrow eyebrow-dark">計算方式</span>
+          <ul class="foot-list" id="defs"></ul>
+        </div>
+        <div>
+          <span class="eyebrow eyebrow-dark">每月自動檢查</span>
+          <ul class="foot-list checks" id="checks"></ul>
+        </div>
+      </div>
+      <p class="footer-note" id="footer-note">每月更新，非即時｜只使用公開資料，不含任何客戶資料｜本頁為課程示範，不構成投資或業務建議</p>
+    </div>
+  </footer>
+  <noscript><p class="wrap">此看板需要啟用 JavaScript。</p></noscript>
+  <script src="app.js" defer></script>
+</body>
+</html>

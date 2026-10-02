@@ -1,0 +1,74 @@
+# 每月資料更新：每天台北時間 10:17 檢查一次；只有公會兩份開放資料都出現新月份、
+# 且 SITCA〈基金基本資料表〉也查得到該月時，才重算並提交 JSON。
+# 任何一步失敗 → 不動既有資料、這個 job 標示失敗 → GitHub 依預設寄信通知（最後修改 cron 的人）。
+name: 每月資料更新
+
+on:
+  schedule:
+    # GitHub 排程一律用 UTC：02:17 UTC = 台北 10:17（避開整點，整點常延遲）
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "指定重算的年月 YYYYMM（留空＝自動檢查最新月份）"
+        required: false
+        default: ""
+      force:
+        description: "自動模式下即使月份沒變也重算"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 取出程式與現有資料
+        uses: actions/checkout@v4
+
+      - name: 檢查／下載／合併／自動檢查
+        id: build
+        env:
+          INPUT_MONTH: ${{ github.event.inputs.month }}
+          INPUT_FORCE: ${{ github.event.inputs.force }}
+        run: |
+          set -euo pipefail
+          python3 --version
+          if [ -n "${INPUT_MONTH:-}" ]; then
+            python3 pipeline/build_data.py --mode build --month "$INPUT_MONTH"
+          elif [ "${INPUT_FORCE:-false}" = "true" ]; then
+            python3 pipeline/build_data.py --mode auto --force
+          else
+            python3 pipeline/build_data.py --mode auto
+          fi
+
+      - name: 驗收測試（僅 2026/08：須與簡報 Demo 1 相同）
+        if: steps.build.outputs.updated == 'true' && steps.build.outputs.month == '202608'
+        run: python3 tests/acceptance_202608.py
+
+      - name: 提交新資料
+        if: steps.build.outputs.updated == 'true'
+        env:
+          MONTH: ${{ steps.build.outputs.month }}
+          OWNER: ${{ github.repository_owner }}
+          OWNER_ID: ${{ github.repository_owner_id }}
+        run: |
+          set -euo pipefail
+          git config user.name "$OWNER"
+          git config user.email "${OWNER_ID}+${OWNER}@users.noreply.github.com"
+          git add public/data data/raw
+          if git diff --cached --quiet; then
+            echo "資料內容沒有變化，不需要提交。"
+            exit 0
+          fi
+          git commit -m "資料更新：${MONTH}（自動）"
+          git pull --rebase --autostash
+          git push
